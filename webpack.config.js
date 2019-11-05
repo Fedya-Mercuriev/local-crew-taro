@@ -51,19 +51,7 @@ module.exports = (_, argv) => {
                             loader: "css-loader"
                         },
                         {
-                            loader: "postcss-loader"
-                        },
-                        {
-                            loader: "sass-loader",
-                            options: {
-                                includePaths: ['node_modules/normalize-scss/sass'],
-                                data: `
-                                 @import './src/scss/scss-assets/_variables.scss';
-                                 @import './src/scss/scss-assets/_mixins.scss';
-                                 @import './src/scss/scss-assets/_functions.scss';
-                                 @import './src/scss/scss-assets/_config.scss';
-                                 `
-                            }
+                            loader: "sass-loader"
                         }
                     ]
                 },
