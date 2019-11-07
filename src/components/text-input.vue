@@ -54,9 +54,8 @@
             }
         },
         methods: {
-            //TODO: Поправить регулярное выражение
             getStringLocale() {
-                if (/[\u0400-\u04FF]+$/.test(this.question)) {
+                    if (/\p{sc=Cyrillic}/gu.test(this.question)) {
                     return 'ru';
                 }
                 return 'other';
@@ -147,7 +146,7 @@
         border-radius: 8px;
         font-size: 13px;
         font-family: 'Roboto', sans-serif;
-        -webkit-appearance: none;
+        /*-webkit-appearance: none;*/
         cursor: pointer;
         transition: all 0.35s;
     }
