@@ -1,22 +1,26 @@
 <template>
-    <form js-fortunetelling-form class="form form_center" action="" method="get">
+    <form class="form form_center"
+          :class="{ 'stick-top': questionConfirmed }"
+          @submit.prevent="triggerLayOutCards"
+          action=""
+          method="get">
         <div class="form-group">
-            <label js-text-input class="field" :class="{ 'shrink-left': confirmationRequested }">
+            <label js-text-input class="field" :class="{ 'shrink-left': questionValid }">
                 <span class="field__label" :class="{ 'is-visible': label.length }">{{ label }}</span>
                 <span class="field__main"></span>
                 <span class="field__indicator"></span>
                 <input class="field-input field__input"
+                       autocomplete="off"
                        v-model="question" type="text"
                        name="question" value=""
                        placeholder="На что будем гадать?">
             </label>
             <button type="submit"
                     class="button button_stick_right button_modal button_red"
-                    :class="{ 'button_hidden': !confirmationRequested }">Давай</button>
+                    :class="{ 'button_hidden': !questionValid }">Давай</button>
         </div>
     </form>
 </template>
-
 <script>
     export default {
         name: "TextInput",
@@ -24,47 +28,55 @@
             return {
                 question: '',
                 label: '',
-                confirmationRequested: false,
-                timerId: null
+                questionValid: false,
+                timerId: null,
+                questionConfirmed: false
             }
         },
         watch: {
-            question(newQuestion, oldQuestion) {
-                if (newQuestion.length > 0 && newQuestion.length < 4) {
-                    clearTimeout(this.timerId);
-                    this.confirmationRequested = false;
+            question(newQuestion) {
+                this.questionConfirmed = false;
+                if (newQuestion.length > 0 && newQuestion.length <= 4) {
+                    this.cancelRequestConfirm();
                     this.label = 'Коротковат вопрос...';
                 } else if (newQuestion.length === 0) {
-                    clearTimeout(this.timerId);
-                    this.confirmationRequested = false;
                     this.label = '';
                 } else if (this.getStringLocale() !== 'ru') {
                     clearTimeout(this.timerId);
                     this.label = 'По-русски!';
-                } else if (newQuestion.length > 25) {
-                    this.label = 'Воу-воу! Полегче!';
                 } else if (newQuestion.length > 50) {
                     this.label = 'Серьезно, остановись';
+                } else if (newQuestion.length > 25) {
+                    this.label = 'Воу-воу! Полегче!';
                 } else {
                     clearTimeout(this.timerId);
                     this.timerId = setTimeout(() => {
                         this.requestInputConfirm();
-                    },400)
+                    },300)
                 }
             }
         },
         methods: {
             getStringLocale() {
-                    if (/\p{sc=Cyrillic}/gu.test(this.question)) {
+                if (/^[\u0400-\u04FF]+/g.test(this.question) && !/\w+/.test(this.question)) {
                     return 'ru';
                 }
                 return 'other';
             },
             triggerLayOutCards() {
-                this.$emit('layout-cards', Math.random());
+                this.questionConfirmed = true;
+                this.cancelRequestConfirm();
+                this.label = '';
+                if (this.questionValid) {
+                    this.$emit('layout-cards', Math.floor(Math.random() * (4 - 1 + 1) + 1));
+                }
+            },
+            cancelRequestConfirm() {
+                clearTimeout(this.timerId);
+                this.questionValid = false;
             },
             requestInputConfirm() {
-                this.confirmationRequested = true;
+                this.questionValid = true;
                 this.label = 'Похоже на вопрос. Делаю расклад?'
             }
         }
@@ -79,6 +91,10 @@
         transform: translate(-50%);
         min-width: 280px;
         max-width: 1240px;
+        transition: all 0.3s;
+    }
+    .form.stick-top {
+        top: 0;
     }
     .form-group {
         position: relative;
@@ -157,6 +173,6 @@
         position: absolute;
         top: 0;
         right: 0;
-        z-index: -1;
+        z-index: 0;
     }
 </style>
