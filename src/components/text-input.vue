@@ -41,6 +41,7 @@
                     this.label = 'Коротковат вопрос...';
                 } else if (newQuestion.length === 0) {
                     this.label = '';
+                    this.cancelRequestConfirm();
                 } else if (this.getStringLocale() !== 'ru') {
                     clearTimeout(this.timerId);
                     this.label = 'По-русски!';
