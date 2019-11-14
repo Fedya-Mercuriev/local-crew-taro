@@ -11,6 +11,7 @@
                 <span class="field__indicator"></span>
                 <input class="field-input field__input"
                        autocomplete="off"
+                       @focus="disapproveQuestion"
                        v-model="question" type="text"
                        name="question" value=""
                        placeholder="На что будем гадать?">
@@ -65,6 +66,7 @@
                 return 'other';
             },
             triggerLayOutCards() {
+                this.$el.querySelector('input').blur();
                 this.questionConfirmed = true;
                 this.cancelRequestConfirm();
                 this.label = '';
@@ -79,6 +81,10 @@
             requestInputConfirm() {
                 this.questionValid = true;
                 this.label = 'Похоже на вопрос. Делаю расклад?'
+            },
+            disapproveQuestion() {
+                this.requestInputConfirm();
+                this.questionConfirmed = false;
             }
         }
     }
@@ -121,6 +127,9 @@
             border-radius: 8px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
             transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+        }
+        &__main, &__indicator {
+            pointer-events: none;
         }
         &__placeholder {
             display: block;
