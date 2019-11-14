@@ -83,8 +83,10 @@
                 this.label = 'Похоже на вопрос. Делаю расклад?'
             },
             disapproveQuestion() {
-                this.requestInputConfirm();
-                this.questionConfirmed = false;
+                if (this.questionConfirmed) {
+                    this.requestInputConfirm();
+                    this.questionConfirmed = false;
+                }
             }
         }
     }
