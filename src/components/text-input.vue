@@ -34,21 +34,28 @@
                 questionConfirmed: false
             }
         },
+        computed: {
+            processedQuestion() {
+                return this.question.replace(/[!?@#$%^&*)(+=./_\\\-\s]+/g, '');
+            }
+        },
         watch: {
             question(newQuestion) {
+                const processedQuestion = this.processedQuestion;
+                console.log(processedQuestion);
                 this.questionConfirmed = false;
-                if (newQuestion.length > 0 && newQuestion.length <= 4) {
+                if (processedQuestion.length > 0 && processedQuestion.length <= 4) {
                     this.cancelRequestConfirm();
                     this.label = 'Коротковат вопрос...';
-                } else if (newQuestion.length === 0) {
+                } else if (processedQuestion.length === 0) {
                     this.label = '';
                     this.cancelRequestConfirm();
                 } else if (this.getStringLocale() !== 'ru') {
                     clearTimeout(this.timerId);
                     this.label = 'По-русски!';
-                } else if (newQuestion.length > 50) {
+                } else if (processedQuestion.length > 50) {
                     this.label = 'Серьезно, остановись';
-                } else if (newQuestion.length > 25) {
+                } else if (processedQuestion.length > 25) {
                     this.label = 'Воу-воу! Полегче!';
                 } else {
                     clearTimeout(this.timerId);
@@ -71,6 +78,7 @@
                 this.cancelRequestConfirm();
                 this.label = '';
                 if (this.questionValid) {
+                    console.log('хуй');
                     this.$emit('layout-cards', Math.floor(Math.random() * (4 - 1 + 1) + 1));
                 }
             },
