@@ -42,7 +42,6 @@
         watch: {
             question(newQuestion) {
                 const processedQuestion = this.processedQuestion;
-                console.log(processedQuestion);
                 this.questionConfirmed = false;
                 if (processedQuestion.length > 0 && processedQuestion.length <= 4) {
                     this.cancelRequestConfirm();

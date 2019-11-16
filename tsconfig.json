@@ -5,6 +5,15 @@
     "sourceMap": true,
     "moduleResolution": "node"
   },
+  "baseUrl": ".",
+  "paths": {
+    "@/*": [
+      "src/*"
+    ]
+  },
+  "files": [
+    "src/types/vue.d.ts"
+  ],
   "exclude": [
     "node_modules"
   ]
