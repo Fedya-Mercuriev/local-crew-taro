@@ -5,7 +5,7 @@
           action=""
           method="get">
         <div class="form-group">
-            <label js-text-input class="field" :class="{ 'shrink-left': questionValid }">
+            <label class="field" :class="{ 'shrink-left': questionValid }">
                 <span class="field__label" :class="{ 'is-visible': label.length }">{{ label }}</span>
                 <span class="field__main"></span>
                 <span class="field__indicator"></span>
@@ -74,12 +74,11 @@
             triggerLayOutCards() {
                 this.$el.querySelector('input').blur();
                 this.questionConfirmed = true;
-                this.cancelRequestConfirm();
                 this.label = '';
                 if (this.questionValid) {
-                    console.log('хуй');
                     this.$emit('layout-cards', Math.floor(Math.random() * (4 - 1 + 1) + 1));
                 }
+                this.cancelRequestConfirm();
             },
             cancelRequestConfirm() {
                 clearTimeout(this.timerId);
