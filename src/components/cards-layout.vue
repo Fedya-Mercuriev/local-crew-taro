@@ -1,5 +1,5 @@
 <template>
-    <div class="cards-layout">
+    <div class="cards-layout" :class="{ 'cards-layout_visible': display }">
         <div class="cards-layout__item" v-for="item in cards">
             <div class="card">
                 <div class="card__title">{{ item.title }}</div>
@@ -13,7 +13,8 @@
     export default {
         name: "CardsLayout",
         props: [
-            'cards'
+            'cards',
+            'display'
         ],
         data() {
             return {}
@@ -27,5 +28,11 @@
 </script>
 
 <style lang="scss">
-
+    .cards-layout {
+        opacity: 0;
+        transition: all 0.3s;
+    }
+    .cards-layout_visible {
+        opacity: 1;
+    }
 </style>
