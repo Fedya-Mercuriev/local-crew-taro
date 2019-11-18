@@ -1,8 +1,15 @@
 <template>
     <div class="app">
         <div class="app__content">
-            <TextInput v-on:layout-cards="setCardsNum($event)"></TextInput>
-            <CardsLayout :cards="selectedCards"></CardsLayout>
+            <TextInput
+                    v-on:layout-cards="setCardsNum($event)"
+                    v-on:reset-card-pack="resetCardPack"
+                    v-on:hide-cards="hideCards">
+            </TextInput>
+            <CardsLayout
+                    :cards="selectedCards"
+                    :display="displayCards">
+            </CardsLayout>
         </div>
     </div>
 </template>
@@ -42,8 +49,38 @@
                       title: 'AAA',
                       description: '....'
                   },
-
+                  {
+                      id: 5,
+                      image: '',
+                      title: 'BBB',
+                      description: '....'
+                  },
+                  {
+                      id: 6,
+                      image: '',
+                      title: 'CCC',
+                      description: '....'
+                  },
+                  {
+                      id: 7,
+                      image: '',
+                      title: 'DDD',
+                      description: '....'
+                  },
+                  {
+                      id: 8,
+                      image: '',
+                      title: 'EEE',
+                      description: '....'
+                  },
+                  {
+                      id: 9,
+                      image: '',
+                      title: 'FFF',
+                      description: '....'
+                  },
               ],
+              displayCards: false,
               cardsNum: 0,
               selectedCards: []
           }
@@ -54,14 +91,21 @@
           }
       },
       methods: {
+          hideCards() {
+              this.displayCards = false;
+          },
+          resetCardPack() {
+              this.selectedCards = [];
+          },
           setCardsNum(cardsNumber) {
               this.cardsNum = cardsNumber;
           },
-        getCardsPack(cardsNumber) {
+          getCardsPack(cardsNumber) {
               for (let i = 0; i < cardsNumber; i++) {
                   this.selectedCards.push(this.getRandomCard());
               }
-        },
+              this.displayCards = true;
+          },
           getRandomCard() {
               const index = Math.floor(Math.random() * (this.cards.length - 1 + 1) + 1) - 1;
               let selectedCard = this.cards[index];

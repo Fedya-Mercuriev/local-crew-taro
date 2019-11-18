@@ -2,7 +2,7 @@
     <form class="form form_center"
           :class="{ 'stick-top': questionConfirmed }"
           @submit.prevent="triggerLayOutCards"
-          action=""
+          action="#"
           method="get">
         <div class="form-group">
             <label class="field" :class="{ 'shrink-left': questionValid }">
@@ -43,6 +43,7 @@
             question(newQuestion) {
                 const processedQuestion = this.processedQuestion;
                 this.questionConfirmed = false;
+                this.$emit('reset-card-pack');
                 if (processedQuestion.length > 0 && processedQuestion.length <= 4) {
                     this.cancelRequestConfirm();
                     this.label = 'Коротковат вопрос...';
@@ -92,6 +93,7 @@
                 if (this.questionConfirmed) {
                     this.requestInputConfirm();
                     this.questionConfirmed = false;
+                    this.$emit('hide-cards');
                 }
             }
         }
