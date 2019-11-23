@@ -1,11 +1,11 @@
 <template>
     <form class="form form_center"
-          :class="{ 'stick-top': questionConfirmed }"
+          :class="{ 'stick-top': questionSubmitted }"
           @submit.prevent="triggerLayOutCards"
           action="#"
           method="get">
         <div class="form-group">
-            <label class="field" :class="{ 'shrink-left': questionValid }">
+            <label class="field" :class="{ 'shrink-left': questionValid && !questionSubmitted }">
                 <span class="field__label" :class="{ 'is-visible': label.length }">{{ label }}</span>
                 <span class="field__main"></span>
                 <span class="field__indicator"></span>
@@ -18,7 +18,7 @@
             </label>
             <button type="submit"
                     class="button button_stick_right button_modal button_red"
-                    :class="{ 'button_hidden': !questionValid }">Давай</button>
+                    :class="{ 'button_hidden': !questionValid || questionSubmitted }">Давай</button>
         </div>
     </form>
 </template>
@@ -27,72 +27,85 @@
         name: "TextInput",
         data() {
             return {
+                input: null,
                 question: '',
                 label: '',
                 questionValid: false,
-                timerId: null,
-                questionConfirmed: false
+                questionSubmitted: false,
+                errors: {
+                    wrongLocale: 'По-русски!',
+                    insufficientCharactersCount: 'Коротковат вопрос...'
+                }
             }
         },
+        mounted() {
+          this.input = this.$el.querySelector('input');
+        },
         computed: {
-            processedQuestion() {
+            tidyQuestion() {
                 return this.question.replace(/[!?@#$%^&*)(+=./_\\\-\s]+/g, '');
             }
         },
         watch: {
             question(newQuestion) {
-                const processedQuestion = this.processedQuestion;
-                this.questionConfirmed = false;
-                this.$emit('reset-card-pack');
-                if (processedQuestion.length > 0 && processedQuestion.length <= 4) {
-                    this.cancelRequestConfirm();
-                    this.label = 'Коротковат вопрос...';
-                } else if (processedQuestion.length === 0) {
-                    this.label = '';
-                    this.cancelRequestConfirm();
-                } else if (this.getStringLocale() !== 'ru') {
-                    clearTimeout(this.timerId);
-                    this.label = 'По-русски!';
-                } else if (processedQuestion.length > 50) {
-                    this.label = 'Серьезно, остановись';
-                } else if (processedQuestion.length > 25) {
-                    this.label = 'Воу-воу! Полегче!';
-                } else {
-                    clearTimeout(this.timerId);
-                    this.timerId = setTimeout(() => {
-                        this.requestInputConfirm();
-                    },300)
+                try {
+                    if (this.validateQuestion(this.tidyQuestion)) {
+                        this.enableSubmit();
+                    }
+                } catch(e) {
+                    this.disableSubmit();
+                    this.updateLabel(e.message);
                 }
             }
         },
         methods: {
-            getStringLocale() {
-                if (/^[\u0400-\u04FF]+/g.test(this.question) && !/\w+/.test(this.question)) {
+            validateQuestion(question) {
+                if (question.length > 0 && question.length < 4) {
+                    throw new Error(this.errors.insufficientCharactersCount);
+                } else if (question.length === 0) {
+                    throw new Error('');
+                } else if (this.getStringLocale(question) !== 'ru') {
+                    throw new Error(this.errors.wrongLocale);
+                } else if (question.length > 50) {
+                    this.updateLabel('Серьезно, остановись');
+                    return true;
+                } else if (question.length > 25) {
+                    this.updateLabel('Воу-воу! Полегче!');
+                    return true;
+                } else {
+                    return true;
+                }
+            },
+            updateLabel(message) {
+                this.label = message;
+            },
+            resetLabel() {
+                this.label = '';
+            },
+            getStringLocale(question) {
+                if (/^[\u0400-\u04FF]+/g.test(question) && !/\w+/.test(question)) {
                     return 'ru';
                 }
                 return 'other';
             },
             triggerLayOutCards() {
-                this.$el.querySelector('input').blur();
-                this.questionConfirmed = true;
-                this.label = '';
-                if (this.questionValid) {
-                    this.$emit('layout-cards', Math.floor(Math.random() * (4 - 1 + 1) + 1));
-                }
-                this.cancelRequestConfirm();
+                if (!this.questionValid) return;
+                this.input.blur();
+                this.resetLabel();
+                this.questionSubmitted = true;
+                this.$emit('layout-cards', this.question);
             },
-            cancelRequestConfirm() {
-                clearTimeout(this.timerId);
+            disableSubmit() {
                 this.questionValid = false;
             },
-            requestInputConfirm() {
+            enableSubmit() {
                 this.questionValid = true;
-                this.label = 'Похоже на вопрос. Делаю расклад?'
+                this.updateLabel('Похоже на вопрос. Делаю расклад?');
             },
             disapproveQuestion() {
-                if (this.questionConfirmed) {
-                    this.requestInputConfirm();
-                    this.questionConfirmed = false;
+                if (this.questionSubmitted) {
+                    this.questionSubmitted = false;
+                    this.enableSubmit();
                     this.$emit('hide-cards');
                 }
             }
@@ -106,6 +119,7 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%);
+        z-index: 100;
         min-width: 280px;
         max-width: 1240px;
         transition: all 0.3s;
