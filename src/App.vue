@@ -8,8 +8,11 @@
             </TextInput>
             <CardsLayout
                     :cards="selectedCards"
-                    :display="displayCards">
+                    :display="displayCards"
+                    v-on:display-card-info="displayCardInfo"
+            >
             </CardsLayout>
+            <Sidebar :cardInfo="selectedCard"></Sidebar>
         </div>
     </div>
 </template>
@@ -17,10 +20,11 @@
 <script>
     import TextInput from './components/text-input';
     import CardsLayout from './components/cards-layout';
+    import Sidebar from './components/sidebar';
     export default {
       name: 'App',
       components: {
-        TextInput, CardsLayout
+        TextInput, CardsLayout, Sidebar
       },
       data() {
           return {
@@ -82,7 +86,9 @@
               ],
               displayCards: false,
               cardsNum: 0,
-              selectedCards: []
+              question: '',
+              selectedCards: [],
+              selectedCard: null
           }
       },
       watch: {
@@ -91,20 +97,31 @@
           }
       },
       methods: {
+          displayCardsLayout() {
+              this.displayCards = true;
+          },
           hideCards() {
               this.displayCards = false;
           },
           resetCardPack() {
               this.selectedCards = [];
           },
-          setCardsNum(cardsNumber) {
-              this.cardsNum = cardsNumber;
+          setCardsNum(question) {
+              if (question.toLowerCase() !== this.question.toLowerCase()) {
+                  this.question = question;
+                  this.generateRandomCardsNumber();
+              } else {
+                  this.displayCardsLayout();
+              }
+          },
+          generateRandomCardsNumber() {
+            this.cardsNum = Math.floor(Math.random() * (4 - 1 + 1) + 1);
           },
           getCardsPack(cardsNumber) {
               for (let i = 0; i < cardsNumber; i++) {
                   this.selectedCards.push(this.getRandomCard());
               }
-              this.displayCards = true;
+              this.displayCardsLayout();
           },
           getRandomCard() {
               const index = Math.floor(Math.random() * (this.cards.length - 1 + 1) + 1) - 1;
@@ -127,6 +144,9 @@
                   }
               }
               return isUnique;
+          },
+          displayCardInfo(selectedCard) {
+              this.selectedCard = selectedCard;
           }
       }
     }
