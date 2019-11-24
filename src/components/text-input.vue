@@ -184,7 +184,7 @@
         display: block;
         width: 100%;
         padding: 15px;
-        background-color: transparent;
+        background-color: #FFFFFF;
         border-color: transparent;
         -webkit-appearance: none;
         outline: none;
