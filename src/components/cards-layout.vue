@@ -41,8 +41,10 @@
     .cards-layout {
         position: absolute;
         top: 90px;
-        left: 0;
-        right: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1;
+        pointer-events: none;
         &__list {
             display: flex;
             padding: 0 20px;
@@ -56,6 +58,7 @@
         margin: 0 -20px;
         &__item {
             margin: 0 10px 20px;
+            pointer-events: auto;
         }
     }
     .slide-fade-leave-active {

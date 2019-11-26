@@ -4,7 +4,9 @@
             <TextInput
                     v-on:layout-cards="setCardsNum($event)"
                     v-on:reset-card-pack="resetCardPack"
-                    v-on:hide-cards="hideCards">
+                    v-on:hide-cards="hideCards"
+                    v-on:hide-card-info="hideCardInfo"
+            >
             </TextInput>
             <CardsLayout
                     :cards="selectedCards"
@@ -14,6 +16,7 @@
             </CardsLayout>
             <Sidebar :cardInfo="selectedCard"></Sidebar>
         </div>
+        <div class="app__background" @click="hideCardInfo"></div>
     </div>
 </template>
 
@@ -107,6 +110,7 @@
               this.selectedCards = [];
           },
           setCardsNum(question) {
+              this.hideCardInfo();
               if (question.toLowerCase() !== this.question.toLowerCase()) {
                   this.question = question;
                   this.generateRandomCardsNumber();
@@ -147,6 +151,9 @@
           },
           displayCardInfo(selectedCard) {
               this.selectedCard = selectedCard;
+          },
+          hideCardInfo(event) {
+              this.selectedCard = null;
           }
       }
     }
@@ -165,6 +172,30 @@
         &__content {
             position: relative;
             height: 100%;
+        }
+        &__overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 9000;
+            display: none;
+            background: #FFFFFF;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        &__overlay.is-visible {
+            display: block;
+            opacity: 1;
+        }
+        &__background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
         }
     }
 </style>

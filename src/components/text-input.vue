@@ -1,26 +1,32 @@
 <template>
-    <form class="form form_center"
-          :class="{ 'stick-top': questionSubmitted }"
-          @submit.prevent="triggerLayOutCards"
-          action="#"
-          method="get">
-        <div class="form-group">
-            <label class="field" :class="{ 'shrink-left': questionValid && !questionSubmitted }">
-                <span class="field__label" :class="{ 'is-visible': label.length }">{{ label }}</span>
-                <span class="field__main"></span>
-                <span class="field__indicator"></span>
-                <input class="field-input field__input"
-                       autocomplete="off"
-                       @focus="disapproveQuestion"
-                       v-model="question" type="text"
-                       name="question" value=""
-                       placeholder="На что будем гадать?">
-            </label>
-            <button type="submit"
-                    class="button button_stick_right button_modal button_red"
-                    :class="{ 'button_hidden': !questionValid || questionSubmitted }">Давай</button>
-        </div>
-    </form>
+    <div class="form-wrapper">
+        <form class="form form_center"
+              :class="{ 'stick-top': questionSubmitted }"
+              @submit.prevent="triggerLayOutCards"
+              action="#"
+              method="get">
+            <div class="form-group">
+                <label class="field" :class="{ 'shrink-left': questionValid && !questionSubmitted }">
+                    <span class="field__label" :class="{ 'is-visible': label.length && !questionSubmitted }">{{ label }}</span>
+                    <span class="field__main"></span>
+                    <span class="field__indicator"></span>
+                    <input class="field-input field__input"
+                           autocomplete="off"
+                           @focus="disapproveQuestion"
+                           v-model="question" type="text"
+                           name="question" value=""
+                           placeholder="На что будем гадать?">
+                </label>
+                <button type="submit"
+                        class="button button_stick_right button_modal button_red"
+                        :class="{ 'button_hidden': !questionValid || questionSubmitted }">Давай</button>
+            </div>
+        </form>
+        <div class="form-wrapper__overlay"
+             :class="{ 'is-visible': !questionSubmitted }"
+             @click="triggerLayOutCards"
+        ></div>
+    </div>
 </template>
 <script>
     export default {
@@ -103,23 +109,41 @@
                 this.updateLabel('Похоже на вопрос. Делаю расклад?');
             },
             disapproveQuestion() {
-                if (this.questionSubmitted) {
-                    this.questionSubmitted = false;
-                    this.enableSubmit();
-                    this.$emit('hide-cards');
-                }
+                this.$emit('hide-card-info');
+                if (!this.questionValid) return;
+                this.questionSubmitted = false;
+                this.enableSubmit();
+                this.$emit('hide-cards');
             }
         }
     }
 </script>
 
 <style lang="scss">
+    .form-wrapper {
+        &__overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            z-index: 9000;
+            display: none;
+            background: #FFFFFF;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        &__overlay.is-visible {
+            display: block;
+            opacity: 1;
+        }
+    }
     .form {
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%);
-        z-index: 100;
+        z-index: 10000;
         min-width: 280px;
         max-width: 1240px;
         transition: all 0.3s;

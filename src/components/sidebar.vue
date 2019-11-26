@@ -35,7 +35,6 @@
         bottom: 0;
         right: 0;
         z-index: 1000;
-
         width: 350px;
         height: 100%;
         background: #FFFFFF;
